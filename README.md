@@ -1,3 +1,32 @@
+Forked from https://github.com/harvard-lts/FITSservlet
+
+Built image available as `ghcr.io/samvera/fitsservlet:1.6.0`
+
+Built using this script (from [this issue](https://github.com/harvard-lts/FITSservlet/issues/46#issuecomment-1438851964)):
+```
+wget https://github.com/harvard-lts/FITSservlet/archive/refs/heads/main.zip
+unzip main.zip -d fits-servlet
+cd fits-servlet/FITSservlet-main/
+curl -LO 'https://github.com/harvard-lts/fits/releases/download/1.6.0/fits-1.6.0.zip'
+curl -LO 'https://github.com/harvard-lts/fits/archive/refs/tags/1.6.0.zip'
+unzip fits-1.6.0.zip -d release
+unzip 1.6.0.zip -d source
+mvn install:install-file -Dfile=source/fits-1.6.0/lib-local/com/portalmedia/embarc/0.2/embarc-0.2.jar -DpomFile=source/fits-1.6.0/lib-local/com/portalmedia/embarc/0.2/embarc-0.2.pom
+mvn install:install-file -Dfile=source/fits-1.6.0/lib-local/com/therockquarry/aes/aes/31.3/aes-31.3.jar -DpomFile=source/fits-1.6.0/lib-local/com/therockquarry/aes/aes/31.3/aes-31.3.pom
+mvn install:install-file -Dfile=source/fits-1.6.0/lib-local/com/twmacinta/fast-md5/2.7.1/fast-md5-2.7.1.jar -DpomFile=source/fits-1.6.0/lib-local/com/twmacinta/fast-md5/2.7.1/fast-md5-2.7.1.pom
+mvn install:install-file -Dfile=source/fits-1.6.0/lib-local/edu/harvard/huit/lts/ots/1.0.62/ots-1.0.62.jar -DpomFile=source/fits-1.6.0/lib-local/edu/harvard/huit/lts/ots/1.0.62/ots-1.0.62.pom
+mvn install:install-file -Dfile=source/fits-1.6.0/lib-local/edu/harvard/lts/tools/aes/31.4.0/aes-31.4.0.jar -DpomFile=source/fits-1.6.0/lib-local/edu/harvard/lts/tools/aes/31.4.0/aes-31.4.0.pom
+mvn install:install-file -Dfile=source/fits-1.6.0/lib-local/edu/harvard/lts/tools/hclaps/2.2.0/hclaps-2.2.0.jar -DpomFile=source/fits-1.6.0/lib-local/edu/harvard/lts/tools/hclaps/2.2.0/hclaps-2.2.0.pom
+mvn install:install-file -Dfile=source/fits-1.6.0/lib-local/nz/govt/natlib/metadata/3.6GA/metadata-3.6GA.jar -DpomFile=source/fits-1.6.0/lib-local/nz/govt/natlib/metadata/3.6GA/metadata-3.6GA.pom
+mvn install:install-file -Dfile=source/fits-1.6.0/pom.xml -DpomFile=source/fits-1.6.0/pom.xml -Dpackaging=pom
+mvn install:install-file -Dfile=release/lib/fits-1.6.0.jar -DpomFile=source/fits-1.6.0/fits-pom.xml
+mvn install:install-file -Dfile=fits-1.6.0.zip -DpomFile=source/fits-1.6.0/fits-pom.xml -Dpackaging=zip
+rm -r 1.6.0.zip fits-1.6.0.zip release source
+mvn -e -q -DskipTests clean package
+mvn -e -q dependency:copy-dependencies -DincludeArtifactIds=fits -DincludeTypes=zip
+docker buildx build -f docker/Dockerfile --platform=linux/amd64,linux/arm64 -t ghcr.io/samvera/fitsservlet:1.6.0 --push .
+```
+
 # FITS Service
 The FITS Service is a project that allows [FITS](http://fitstool.org) to be deployed as a service on either Tomcat or JBoss.
 The project has been built with Java 11. (It has been tested on Tomcat 7, Tomcat 8, and minimally tested on JBoss 7.1.)
